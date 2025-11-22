@@ -1,1 +1,6 @@
 .idea/
+.git/
+.env
+
+composer.lock
+vendor/

@@ -1,12 +1,41 @@
 <?php
 /* @var User $user */
 require_once __DIR__ . '/../../Models/User.php';
+require_once __DIR__ . '/../../../middleware/Auth.php';
+
+$currentUser = Auth::user();
+$isOwnProfile = $currentUser && $currentUser->id === $user->id;
 ?>
 
-<h2>User <?= htmlspecialchars($user->username); ?></h2>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Utilizator - Casa de Producție</title>
+</head>
+<body>
+    <div>
+        <a href="/">← Înapoi la pagina principală</a>
+    </div>
 
-<ul>
-    <li>id: <?= htmlspecialchars($user->id); ?></li>
-    <li>Name: <?= htmlspecialchars($user->full_name); ?></li>
-    <li>Email: <?= htmlspecialchars($user->email); ?></li>
-</ul>
+    <h2>Profil Utilizator: <?= htmlspecialchars($user->username); ?></h2>
+
+    <div>
+        <ul>
+            <li><strong>ID:</strong> <?= htmlspecialchars($user->id); ?></li>
+            <li><strong>Nume complet:</strong> <?= htmlspecialchars($user->full_name); ?></li>
+            <li><strong>Email:</strong> <?= htmlspecialchars($user->email); ?></li>
+            <?php if ($user->created_at): ?>
+                <li><strong>Înregistrat la:</strong> <?= htmlspecialchars($user->created_at); ?></li>
+            <?php endif; ?>
+        </ul>
+    </div>
+
+    <?php if ($isOwnProfile): ?>
+        <div>
+            <a href="/edit-profile">Editează Profilul</a>
+        </div>
+    <?php endif; ?>
+</body>
+</html>

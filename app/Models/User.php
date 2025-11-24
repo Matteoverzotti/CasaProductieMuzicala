@@ -93,4 +93,68 @@ class User extends Model {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user ? self::fromArray($user) : null;
     }
+
+    /**
+     * Update user information.
+     *
+     * @param int $id The ID of the user to update.
+     * @param string $username The new username.
+     * @param string $full_name The new full name.
+     * @param string $email The new email.
+     * @param string|null $password The new password (optional).
+     * @return bool True on success, false on failure.
+     */
+    public static function updateUser(int $id, string $username, string $full_name, string $email, ?string $password = null): bool {
+        $pdo = Database::getConnection();
+        
+        if ($password) {
+            $hash = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare("UPDATE " . self::$table . " SET username = :username, full_name = :full_name, email = :email, password_hash = :password_hash, updated_at = NOW() WHERE id = :id");
+            $result = $stmt->execute([
+                ':id' => $id,
+                ':username' => $username,
+                ':full_name' => $full_name,
+                ':email' => $email,
+                ':password_hash' => $hash
+            ]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE " . self::$table . " SET username = :username, full_name = :full_name, email = :email, updated_at = NOW() WHERE id = :id");
+            $result = $stmt->execute([
+                ':id' => $id,
+                ':username' => $username,
+                ':full_name' => $full_name,
+                ':email' => $email
+            ]);
+        }
+        
+        return $result && $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Delete a user account.
+     *
+     * @param int $id The ID of the user to delete.
+     * @return bool True on success, false on failure.
+     */
+    public static function deleteUser(int $id): bool {
+        $pdo = Database::getConnection();
+        
+        $stmt = $pdo->prepare("DELETE FROM refresh_tokens WHERE user_id = :user_id");
+        $stmt->execute([':user_id' => $id]);
+        
+        $stmt = $pdo->prepare("DELETE FROM " . self::$table . " WHERE id = :id");
+        $result = $stmt->execute([':id' => $id]);
+        
+        return $result && $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Verify if provided password matches user's password
+     * 
+     * @param string $password The plaintext password to verify
+     * @return bool True if password matches, false otherwise
+     */
+    public function verifyPassword(string $password): bool {
+        return password_verify($password, $this->password_hash);
+    }
 }

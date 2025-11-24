@@ -5,9 +5,8 @@ require_once __DIR__ . '/../Models/User.php';
 
 class UserController extends Controller {
 
-    public function showUser(int $id) : void {
-        $userModel = new User();
-        $user = $userModel->getUserById($id);
+    public function showUserView(int $id) : void {
+        $user = User::getUserById($id);
 
         if ($user) {
             $this->render('User/show', ['user' => $user]);

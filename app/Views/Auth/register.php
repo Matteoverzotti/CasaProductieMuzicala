@@ -1,0 +1,31 @@
+<?php
+// @var string|null $error
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0
+            ">
+        <title>Register</title>
+    </head>
+    <body>
+        <h2>Înregistrare</h2>
+        <?php if (!empty($error)): ?>
+            <p style="color:red"><?=htmlspecialchars($error)?></p>
+        <?php endif; ?>
+
+        <form method="post" action="/register">
+            <label>Username: <input type="text" name="username" required></label><br>
+            <label>Nume complet: <input type="text" name="full_name" required></label><br>
+            <label>Email: <input type="text" name="email" required></label><br>
+            <label>Parola: <input type="password" name="password" required></label><br>
+            <label>Repetă Parola: <input type="password" name="confirm_password" required></label><br>
+            <button>Înregistrează-te</button>
+        </form>
+
+        <p><a href="/login">Ai deja cont? Conectează-te</a></p>
+        <p><a href="/">Înapoi</a></p>
+    </body>
+</html>

@@ -1,12 +1,13 @@
 <?php
 
 require_once __DIR__ . '/Model.php';
+require_once __DIR__ . '/../Constants/constants.php';
 
 class User extends Model {
     private static string $table = 'user';
     
     public int $id = 0;
-    public int $role_id = 1;
+    public int $role_id = USER_ROLE_ID;
     public string $username = '';
     public string $email = '';
     public string $full_name = '';
@@ -17,7 +18,7 @@ class User extends Model {
     public function __construct(array $data = []) {
         if (!empty($data)) {
             $this->id = (int)($data['id'] ?? 0);
-            $this->role_id = (int)($data['role_id'] ?? 1);
+            $this->role_id = (int)($data['role_id'] ?? USER_ROLE_ID);
             $this->username = $data['username'] ?? '';
             $this->email = $data['email'] ?? '';
             $this->full_name = $data['full_name'] ?? '';
@@ -61,7 +62,7 @@ class User extends Model {
      * @param string $password The plaintext password of the new user.
      * @return int The ID of the newly created user.
      */
-    public static function createUser(string $username, string $full_name, string $email, string $password, int $role = 1): int {
+    public static function createUser(string $username, string $full_name, string $email, string $password, int $role = USER_ROLE_ID): int {
         $hash = password_hash($password, PASSWORD_BCRYPT);
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("INSERT INTO " . self::$table . " (role_id, username, email, password_hash, full_name) VALUES (:role_id, :username, :email, :password_hash, :full_name)");

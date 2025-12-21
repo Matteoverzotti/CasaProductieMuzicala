@@ -36,13 +36,11 @@ $routes = [
         '/login' => [AuthController::class, 'login'],
         '/register' => [AuthController::class, 'register'],
         '/contact' => [ContactController::class, 'contact'],
+        '/delete-account' => [UserController::class, 'deleteAccount'],
         '/edit-profile' => [UserController::class, 'editProfile'],
         '/admin/messages/archive' => [ContactController::class, 'archiveMessage'],
         '/admin/messages/dearchive' => [ContactController::class, 'dearchiveMessage'],
     ],
-    'DELETE' => [
-        '/delete-account' => [UserController::class, 'deleteAccount'],
-    ]
 ];
 
 if (isset($routes[$method][$request])) {

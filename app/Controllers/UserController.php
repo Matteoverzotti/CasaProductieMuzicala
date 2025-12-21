@@ -41,12 +41,7 @@ class UserController extends Controller {
     }
 
     public function showAllUsers() : void {
-        $currentUser = Auth::user();
-        if (!$currentUser || $currentUser->role_id !== ADMIN_ROLE_ID) {
-            $_SESSION["flash"] = ["message" => "Acces interzis.", "type" => "error"];
-            header('Location: /');
-            exit;
-        }
+        Auth::requireAdmin();
         $this->render('Users/show');
     }
 

@@ -143,7 +143,7 @@ class UserController extends Controller {
             return;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
             if (User::deleteUser($userToDelete->id)) {
                 if ($currentUser->id === $userToDelete->id) {
                     Auth::logout();

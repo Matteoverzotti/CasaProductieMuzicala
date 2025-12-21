@@ -169,6 +169,23 @@ class Auth {
         return $userData ? User::fromArray($userData) : null;
     }
 
+    public static function requireLogin(): void {
+        if (!self::user()) {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Trebuie să fii autentificat pentru a accesa această pagină.'];
+            header('Location: /login');
+            exit;
+        }
+    }
+
+    public static function requireAdmin(): void {
+        $user = self::user();
+        if (!$user || $user->role_id !== ADMIN_ROLE_ID) {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Acces interzis. Această pagină este rezervată administratorilor.'];
+            header('Location: /');
+            exit;
+        }
+    }
+
     private static function getAuthorizationHeader(): ?string {
         if (isset($_SERVER['Authorization'])) {
             return trim($_SERVER["Authorization"]);

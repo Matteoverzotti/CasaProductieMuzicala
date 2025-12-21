@@ -22,9 +22,9 @@
         <li><b>Administrator:</b> gestionare utilizatori, toate funcționalitățile CRUD, vizualizare și generare rapoarte, vizualizare statistici aplicatie, configurare feed-uri;</li>
         <li><b>Producător:</b> administrare artiști/albume/proiecte, aprobare și vizualizare rezervări, generare rapoarte specifice;</li>
         <li><b>Inginer Sunet:</b> upload și administrare fișiere audio pentru proiecte; vizualizare proiecte.</li>
-        <li><b>Artist:</b> vizualizare propriilor proiecte, upload demo-uri, vizualizare status rezervări.</li>
-        <li><b>Client autentificat:</b> solicitare rezervări, vizualizare status rezervări, contact.</li>
-        <li><b>Vizitator neautentificat:</b> vizualizare informații publice, contact prin formular.</li>
+        <li><b>Artist:</b> solicitare rezervări, vizualizare status rezervări, vizualizare propriilor proiecte, upload demo-uri, vizualizare status rezervări.</li>
+        <li><b>Client autentificat:</b> modificare profil propriu, contact administrator.</li>
+        <li><b>Vizitator neautentificat:</b> vizualizare informații publice, creare cont.</li>
     </ul>
 
     <h2>Entități principale</h2>
@@ -41,7 +41,7 @@
     </ul>
 
     <h2>Descriere a bazei de date</h2>
-    <p>Aplicația web gestionează activitatea unei case de producție muzicală prin intermediul unei baze de date relaționale MariaDB. Utilizatorii site-ului pot fi de mai multe tipuri, fiecare având permisiuni diferite asupra entităților din sistem. Administratorul are control total asupra tuturor entităților, în timp ce producătorii, inginerii de sunet și artiștii au acces limitat la funcționalități specifice rolului lor. Clienții autentificați pot solicita rezervări și pot vizualiza statusul acestora, iar vizitatorii neautentificați pot accesa doar informațiile publice și formularul de contact.</p>
+    <p>Aplicația web gestionează activitatea unei case de producție muzicală prin intermediul unei baze de date relaționale MariaDB. Utilizatorii site-ului pot fi de mai multe tipuri, fiecare având permisiuni diferite asupra entităților din sistem. Administratorul are control total asupra tuturor entităților, în timp ce producătorii, inginerii de sunet și artiștii au acces limitat la funcționalități specifice rolului lor. Clienții autentificați pot doar să contacteze administratorul prin formularul de contact, iar vizitatorii neautentificați pot accesa doar informațiile publice și își pot crea cont.</p>
     <p>Un client neautentificat își poate crea un cont pentru a deveni client autentificat. Odată autentificat, acesta poate solicita fie rezervări de studio pentru proiectele sale - devenind artist, fie poate cere să devină inginer de sunet sau producător, în funcție de nevoile sale. Administratorul va aproba sau respinge aceste cereri.</p>
     <p>Un artist poate realiza unul sau mai multe booking-uri pentru a începe sau continua un proiect muzical. Fiecare booking este asociat unui proiect specific și are un status care indică dacă rezervarea este în așteptare, aprobată sau respinsă, alături de data la care s-ar desfășura. Producătorii și inginerii de sunet pot fi asociați cu proiecte pentru a colabora la înregistrări și producții muzicale. Fiecare booking este realizat de un singur artist.</p>
     <p>Un proiect (o sesiune de înregistrare) reprezintă un spațiu de lucru unde artiștii, producătorii și inginerii de sunet pot colabora pentru a crea muzică, ulterior care poate fi organizată în albume și piese. Un proiect poate include mai mulți artiști, producători și/sau ingineri de sunet, iar fiecare dintre aceștia pot lucra pe mai multe proiecte. Odată finalizate, piesele pot fi lansate publicului și pot fi organizate în albume, E.P.-uri sau single-uri (pentru simplitate, în baza de date vor fi toate grupate sub entitatea <em>Albume</em>). Fiecare piesă face parte dintr-unul sau mai multe albume (poate fi întâi lansat ca single, apoi adăugat unui album), iar fiecare album conține una sau mai multe piese.</p>

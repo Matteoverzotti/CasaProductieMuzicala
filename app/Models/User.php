@@ -113,30 +113,36 @@ class User extends Model {
      * @param string $full_name The new full name.
      * @param string $email The new email.
      * @param string|null $password The new password (optional).
+     * @param int|null $role_id The new role ID (optional).
      * @return bool True on success, false on failure.
      */
-    public static function updateUser(int $id, string $username, string $full_name, string $email, ?string $password = null): bool {
+    public static function updateUser(int $id, string $username, string $full_name, string $email, ?string $password = null, ?int $role_id = null): bool {
         $pdo = Database::getConnection();
         
+        $params = [
+            ':id' => $id,
+            ':username' => $username,
+            ':full_name' => $full_name,
+            ':email' => $email,
+        ];
+
+        $query = "UPDATE " . self::$table . " SET username = :username, full_name = :full_name, email = :email";
+
         if ($password) {
             $hash = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $pdo->prepare("UPDATE " . self::$table . " SET username = :username, full_name = :full_name, email = :email, password_hash = :password_hash, updated_at = NOW() WHERE id = :id");
-            $result = $stmt->execute([
-                ':id' => $id,
-                ':username' => $username,
-                ':full_name' => $full_name,
-                ':email' => $email,
-                ':password_hash' => $hash
-            ]);
-        } else {
-            $stmt = $pdo->prepare("UPDATE " . self::$table . " SET username = :username, full_name = :full_name, email = :email, updated_at = NOW() WHERE id = :id");
-            $result = $stmt->execute([
-                ':id' => $id,
-                ':username' => $username,
-                ':full_name' => $full_name,
-                ':email' => $email
-            ]);
+            $query .= ", password_hash = :password_hash";
+            $params[':password_hash'] = $hash;
         }
+
+        if ($role_id !== null) {
+            $query .= ", role_id = :role_id";
+            $params[':role_id'] = $role_id;
+        }
+
+        $query .= ", updated_at = NOW() WHERE id = :id";
+        
+        $stmt = $pdo->prepare($query);
+        $result = $stmt->execute($params);
         
         return $result && $stmt->rowCount() > 0;
     }

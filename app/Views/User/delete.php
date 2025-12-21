@@ -1,6 +1,6 @@
 <?php
 /* @var User $user */
-/* @var string|null $error */
+/* @var bool $isOwnAccount */
 require_once __DIR__ . '/../../Models/User.php';
 ?>
 
@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../Models/User.php';
 <body>
     <div>
         <a href="/">← Înapoi la pagina principală</a>
-        <a href="/edit-profile">← Înapoi la editare profil</a>
+        <a href="/edit-profile<?= $isOwnAccount ? '' : '?id=' . $user->id ?>">← Înapoi la editare profil</a>
     </div>
 
     <h2>Ștergere Cont</h2>
@@ -37,6 +37,6 @@ require_once __DIR__ . '/../../Models/User.php';
         </button>
     </form>
 
-    <a href="/edit-profile">Anulează</a>
+    <a href="/edit-profile<?= $isOwnAccount ? '' : '?id=' . $user->id ?>">Anulează</a>
 </body>
 </html>

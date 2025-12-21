@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../Models/User.php';
 require_once __DIR__ . '/../../../middleware/Auth.php';
 
 $currentUser = Auth::user();
-$isOwnProfile = $currentUser && $currentUser->id === $user->id;
+$isOwnProfile = $isOwnProfile ?? ($currentUser && $currentUser->id === $user->id);
 ?>
 
 <!DOCTYPE html>
@@ -38,9 +38,9 @@ $isOwnProfile = $currentUser && $currentUser->id === $user->id;
         </ul>
     </div>
 
-    <?php if ($isOwnProfile): ?>
+    <?php if ($isOwnProfile || ($currentUser && $currentUser->role_id === ADMIN_ROLE_ID)): ?>
         <div>
-            <a href="/edit-profile">Editează Profilul</a>
+            <a href="/edit-profile<?= $isOwnProfile ? '' : '?id=' . $user->id ?>">Editează Profilul</a>
         </div>
     <?php endif; ?>
 </body>

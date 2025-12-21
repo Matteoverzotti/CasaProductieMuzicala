@@ -33,24 +33,11 @@ $users = User::allUsers();
                 <?php if ($user->created_at): ?>
                     , <strong>Înregistrat la:</strong> <?= htmlspecialchars($user->created_at); ?>
                 <?php endif; ?>
+                | <a href="/profile?id=<?= $user->id ?>">Vezi</a>
+                | <a href="/edit-profile?id=<?= $user->id ?>">Editează</a>
+                | <a href="/delete-account?id=<?= $user->id ?>">Șterge</a>
             </li>
         <?php endforeach; ?>
     </ul>
-<!--    <div>-->
-<!--        <ul>-->
-<!--            <li><strong>ID:</strong> --><?php //= htmlspecialchars($user->id); ?><!--</li>-->
-<!--            <li><strong>Nume complet:</strong> --><?php //= htmlspecialchars($user->full_name); ?><!--</li>-->
-<!--            <li><strong>Email:</strong> --><?php //= htmlspecialchars($user->email); ?><!--</li>-->
-<!--            --><?php //if ($user->created_at): ?>
-<!--                <li><strong>Înregistrat la:</strong> --><?php //= htmlspecialchars($user->created_at); ?><!--</li>-->
-<!--            --><?php //endif; ?>
-<!--        </ul>-->
-<!--    </div>-->
-<!---->
-<!--    --><?php //if ($isOwnProfile): ?>
-<!--        <div>-->
-<!--            <a href="/edit-profile">Editează Profilul</a>-->
-<!--        </div>-->
-<!--    --><?php //endif; ?>
 </body>
 </html>

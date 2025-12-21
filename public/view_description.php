@@ -146,6 +146,10 @@ CREATE TABLE MESAJ (
 
     <h2>Diagrama ER</h2>
     <h3>Generată folosind DataGrip. Powered by graphviz</h3>
-    <img src="diagrama.svg" alt="Diagrama ER a bazei de date">
+    <img src="diagrams/diagrama.svg" alt="Diagrama ER a bazei de date">
+
+    <h2>Diagrama Workflow</h2>
+    <h3>Generată folosind draw.io</h3>
+    <img src="diagrams/workflow.svg" alt="Diagrama Workflow a aplicației">
 </body>
 </html>

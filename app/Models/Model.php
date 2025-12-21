@@ -8,9 +8,9 @@ class Model {
      *
      * @param string $sql The SQL query to execute.
      * @param array $params Optional parameters for the SQL query.
-     * @return \PDOStatement|bool The resulting PDOStatement or false on failure.
+     * @return PDOStatement|bool The resulting PDOStatement or false on failure.
      */
-    protected function query(string $sql, array $params = []) : \PDOStatement|bool {
+    protected function query(string $sql, array $params = []) : PDOStatement|bool {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);

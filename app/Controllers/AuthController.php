@@ -7,13 +7,12 @@ require_once __DIR__ . '/../../middleware/Auth.php';
 class AuthController extends Controller {
 
     public function login() : void {
-        $error = null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
 
             if (empty($username) || empty($password)) {
-                $error = 'Username-ul și parola sunt obligatorii.';
+                $_SESSION['flash'] = ['message' => 'Username-ul și parola sunt obligatorii.', 'type' => 'error'];
             } else {
                 $user = User::getByUsername($username);
                 if ($user && password_verify($password, $user->password_hash)) {
@@ -21,12 +20,12 @@ class AuthController extends Controller {
                     header('Location: /');
                     exit;
                 } else {
-                    $error = 'Credențiale invalide.';
+                    $_SESSION['flash'] = ['message' => 'Credențiale invalide.', 'type' => 'error'];
                 }
             }
         }
 
-        $this->render('Auth/login', ['error' => $error]);
+        $this->render('Auth/login');
     }
 
     public function logout() : void {
@@ -36,7 +35,6 @@ class AuthController extends Controller {
     }
 
     public function register() : void {
-        $error = null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
             $full_name = trim($_POST['full_name'] ?? '');
@@ -45,23 +43,24 @@ class AuthController extends Controller {
             $confirmPassword = $_POST['confirm_password'] ?? '';
 
             if (empty($username) || empty($email) || empty($password) || empty($confirmPassword)) {
-                $error = 'Toate câmpurile sunt obligatorii.';
+                $_SESSION['flash'] = ['message' => 'Toate câmpurile sunt obligatorii.', 'type' => 'error'];
             } elseif ($password !== $confirmPassword) {
-                $error = 'Parolele nu se potrivesc.';
+                $_SESSION['flash'] = ['message' => 'Parolele nu se potrivesc.', 'type' => 'error'];
             } else {
                 if (User::getByUsername($username)) {
-                    $error = 'Numele de utilizator este deja folosit.';
+                    $_SESSION['flash'] = ['message' => 'Numele de utilizator este deja folosit.', 'type' => 'error'];
                 } elseif (User::getByEmail($email)) {
-                    $error = 'Email-ul este deja folosit.';
+                    $_SESSION['flash'] = ['message' => 'Email-ul este deja folosit.', 'type' => 'error'];
                 } else {
                     $id = User::createUser($username, $full_name, $email, $password);
                     Auth::loginSetCookies((int)$id);
+                    $_SESSION['flash'] = ['message' => 'Cont creat cu succes!', 'type' => 'success'];
                     header('Location: /');
                     exit;
                 }
             }
         }
 
-        $this->render('Auth/register', ['error' => $error]);
+        $this->render('Auth/register');
     }
 }

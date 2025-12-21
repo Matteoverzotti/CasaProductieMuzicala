@@ -20,12 +20,10 @@ require_once __DIR__ . '/../../Models/User.php';
 
     <h2>Editare Profil</h2>
 
-    <?php if (isset($error)): ?>
-        <div><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-
-    <?php if (isset($success)): ?>
-        <div style="color: green"><?= htmlspecialchars($success) ?></div>
+    <?php if (!empty($flash)): ?>
+        <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
+            <?= htmlspecialchars($flash['message']) ?>
+        </p>
     <?php endif; ?>
 
     <form method="POST">

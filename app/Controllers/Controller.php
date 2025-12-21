@@ -9,6 +9,10 @@ class Controller {
      * @return void
      */
     protected function render(string $view, array $data = []) : void {
+        if (isset($_SESSION['flash'])) {
+            $data['flash'] = $_SESSION['flash'];
+            unset($_SESSION['flash']);
+        }
         extract($data);
         require __DIR__ . '/../Views/' . $view . '.php';
     }

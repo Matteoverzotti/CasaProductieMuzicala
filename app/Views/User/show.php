@@ -21,6 +21,12 @@ $isOwnProfile = $currentUser && $currentUser->id === $user->id;
 
     <h2>Profil Utilizator: <?= htmlspecialchars($user->username); ?></h2>
 
+    <?php if (!empty($flash)): ?>
+        <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
+            <?= htmlspecialchars($flash['message']) ?>
+        </p>
+    <?php endif; ?>
+
     <div>
         <ul>
             <li><strong>ID:</strong> <?= htmlspecialchars($user->id); ?></li>

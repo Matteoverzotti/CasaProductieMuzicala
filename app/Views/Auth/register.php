@@ -12,8 +12,10 @@
     </head>
     <body>
         <h2>Înregistrare</h2>
-        <?php if (!empty($error)): ?>
-            <p style="color:red"><?=htmlspecialchars($error)?></p>
+        <?php if (!empty($flash)): ?>
+            <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
+                <?= htmlspecialchars($flash['message']) ?>
+            </p>
         <?php endif; ?>
 
         <form method="post" action="/register">

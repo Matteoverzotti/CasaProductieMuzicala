@@ -3,6 +3,7 @@
 require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../../middleware/Auth.php';
+require_once __DIR__ . '/../Constants/constants.php';
 
 class UserController extends Controller {
 
@@ -16,6 +17,16 @@ class UserController extends Controller {
         $this->render('User/show', ['user' => $currentUser]);
     }
 
+    public function showAllUsers() : void {
+        $currentUser = Auth::user();
+        if (!$currentUser || $currentUser->role_id !== ADMIN_ROLE_ID) {
+            $_SESSION["flash"] = ["message" => "Acces interzis.", "type" => "error"];
+            header('Location: /');
+            exit;
+        }
+        $this->render('Users/show');
+    }
+
     // TODO: Maybe refactor this and createAccount because they share a lot of code
     public function editProfile() : void {
         $currentUser = Auth::user();
@@ -23,9 +34,6 @@ class UserController extends Controller {
             header('Location: /login');
             exit;
         }
-
-        $error = null;
-        $success = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username'] ?? '');
@@ -36,26 +44,26 @@ class UserController extends Controller {
             $current_password = $_POST['current_password'] ?? '';
 
             if (empty($current_password) || !$currentUser->verifyPassword($current_password)) {
-                $error = 'Parola curentă este incorectă.';
+                $_SESSION['flash'] = ['message' => 'Parola curentă este incorectă.', 'type' => 'error'];
             } elseif (empty($username) || empty($full_name) || empty($email)) {
-                $error = 'Username-ul, numele complet și email-ul sunt obligatorii.';
+                $_SESSION['flash'] = ['message' => 'Username-ul, numele complet și email-ul sunt obligatorii.', 'type' => 'error'];
             } elseif (!empty($password) && $password !== $confirm_password) {
-                $error = 'Parolele noi nu se potrivesc.';
+                $_SESSION['flash'] = ['message' => 'Parolele noi nu se potrivesc.', 'type' => 'error'];
             } else {
                 $existingUserByUsername = User::getByUsername($username);
                 if ($existingUserByUsername && $existingUserByUsername->id !== $currentUser->id) {
-                    $error = 'Numele de utilizator este deja folosit de alt cont.';
+                    $_SESSION['flash'] = ['message' => 'Numele de utilizator este deja folosit de alt cont.', 'type' => 'error'];
                 } else {
                     $existingUserByEmail = User::getByEmail($email);
                     if ($existingUserByEmail && $existingUserByEmail->id !== $currentUser->id) {
-                        $error = 'Email-ul este deja folosit de alt cont.';
+                        $_SESSION['flash'] = ['message' => 'Email-ul este deja folosit de alt cont.', 'type' => 'error'];
                     } else {
                         $updatePassword = !empty($password) ? $password : null;
                         if (User::updateUser($currentUser->id, $username, $full_name, $email, $updatePassword)) {
-                            $success = 'Profilul a fost actualizat cu succes!';
+                            $_SESSION['flash'] = ['message' => 'Profilul a fost actualizat cu succes!', 'type' => 'success'];
                             $currentUser = User::getUserById($currentUser->id);
                         } else {
-                            $error = 'A apărut o eroare la actualizarea profilului.';
+                            $_SESSION['flash'] = ['message' => 'A apărut o eroare la actualizarea profilului.', 'type' => 'error'];
                         }
                     }
                 }
@@ -63,9 +71,7 @@ class UserController extends Controller {
         }
 
         $this->render('User/edit', [
-            'user' => $currentUser,
-            'error' => $error,
-            'success' => $success
+            'user' => $currentUser
         ]);
     }
 
@@ -79,18 +85,16 @@ class UserController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (User::deleteUser($currentUser->id)) {
                 Auth::logout();
-                header('Location: /?deleted=1');
+                $_SESSION['flash'] = ['message' => 'Contul a fost șters cu succes.', 'type' => 'success'];
+                header('Location: /');
                 exit;
             } else {
-                $error = 'A apărut o eroare la ștergerea contului.';
+                $_SESSION['flash'] = ['message' => 'A apărut o eroare la ștergerea contului.', 'type' => 'error'];
             }
-        } else {
-            $error = null;
         }
 
         $this->render('User/delete', [
-            'user' => $currentUser,
-            'error' => $error ?? null
+            'user' => $currentUser
         ]);
     }
 }

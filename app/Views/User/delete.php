@@ -19,15 +19,17 @@ require_once __DIR__ . '/../../Models/User.php';
 
     <h2>Ștergere Cont</h2>
 
+    <?php if (!empty($flash)): ?>
+        <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
+            <?= htmlspecialchars($flash['message']) ?>
+        </p>
+    <?php endif; ?>
+
     <div>
         <strong>Atenție!</strong><br>
         Această acțiune va șterge permanent contul pentru utilizatorul <strong><?= htmlspecialchars($user->username) ?></strong>.<br>
         Toate datele asociate cu acest cont vor fi pierdute și nu pot fi recuperate.
     </div>
-
-    <?php if (isset($error)): ?>
-        <div><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
 
     <form method="POST">
         <button type="submit" onclick="return confirm('Sunteți absolut sigur că doriți să ștergeți acest cont? Această acțiune nu poate fi anulată!')">

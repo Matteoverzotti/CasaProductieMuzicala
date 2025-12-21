@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Controllers/HomeController.php';
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
@@ -22,6 +24,7 @@ $routes = [
     '/profile' => [UserController::class, 'showCurrentUserProfile'],
     '/edit-profile' => [UserController::class, 'editProfile'],
     '/delete-account' => [UserController::class, 'deleteAccount'],
+    '/users' => [UserController::class, 'showAllUsers'],
 ];
 
 if (array_key_exists($request, $routes)) {

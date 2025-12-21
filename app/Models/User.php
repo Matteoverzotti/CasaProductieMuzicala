@@ -27,6 +27,16 @@ class User extends Model {
         }
     }
 
+    public static function allUsers(): array {
+        $model = new self();
+        $rawUsers = $model->all(self::$table);
+        $users = [];
+        foreach ($rawUsers as $userData) {
+            $users[] = self::fromArray($userData);
+        }
+        return $users;
+    }
+
     public static function fromArray(array $data): self {
         return new self($data);
     }

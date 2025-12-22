@@ -1,8 +1,11 @@
 <?php
-/** @var Project $project */
-/** @var array $projectUsers */
-/** @var User $user */
-/** @var bool $isAuthor */
+/**
+ * @var Project $project
+ * @var array $projectUsers
+ * @var User $user
+ * @var bool $isAuthor
+ * @var string $csrf_token
+ */
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +38,7 @@
                 </span>
                 <?php if ($isAuthor && $u['status'] === 'denied'): ?>
                     <form action="/project/re-request" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                         <input type="hidden" name="project_id" value="<?= $project->id ?>">
                         <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
                         <button type="submit">Re-solicita aprobare</button>
@@ -53,6 +57,7 @@
     <?php if ($isAuthor): ?>
         <hr>
         <form action="/project/delete" method="POST" onsubmit="return confirm('Sigur doresti sa stergi acest proiect?');">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <input type="hidden" name="project_id" value="<?= $project->id ?>">
             <button type="submit" style="color: red;">Șterge Proiectul</button>
         </form>

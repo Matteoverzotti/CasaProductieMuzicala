@@ -1,5 +1,8 @@
 <?php
-// @var string|null $error
+/**
+ * @var string|null $error
+ * @var string $csrf_token
+ */
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +22,7 @@
         <?php endif; ?>
 
         <form method="post" action="/register">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <label>Username: <input type="text" name="username" required></label><br>
             <label>Nume complet: <input type="text" name="full_name" required></label><br>
             <label>Email: <input type="text" name="email" required></label><br>

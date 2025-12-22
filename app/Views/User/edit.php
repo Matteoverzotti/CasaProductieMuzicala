@@ -1,7 +1,10 @@
 <?php
-/* @var User $user */
-/* @var bool $isAdmin */
-/* @var bool $isOwnProfile */
+/**
+ * @var User $user
+ * @var bool $isAdmin
+ * @var bool $isOwnProfile
+ * @var string $csrf_token
+ */
 require_once __DIR__ . '/../../Models/User.php';
 ?>
 
@@ -27,6 +30,7 @@ require_once __DIR__ . '/../../Models/User.php';
     <?php endif; ?>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
         <div>
             <label for="username">Nume utilizator:</label>
             <input type="text" id="username" name="username" value="<?= htmlspecialchars($user->username) ?>" required>

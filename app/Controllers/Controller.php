@@ -13,6 +13,7 @@ class Controller {
             $data['flash'] = $_SESSION['flash'];
             unset($_SESSION['flash']);
         }
+        $data['csrf_token'] = $_SESSION['csrf_token'] ?? '';
         extract($data);
         require __DIR__ . '/../Views/' . $view . '.php';
     }

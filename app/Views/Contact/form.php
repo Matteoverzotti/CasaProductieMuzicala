@@ -1,5 +1,8 @@
 <?php
-/* @var User $user */
+/**
+ * @var User $user
+ * @var string $csrf_token
+ */
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +28,7 @@
     <p>Bună, <?= htmlspecialchars($user->full_name ?: $user->username) ?> (<?= htmlspecialchars($user->email) ?>). Folosește formularul de mai jos pentru a trimite un mesaj administratorului.</p>
 
     <form action="/contact" method="POST">
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
         <fieldset>
             <legend>Mesaj nou</legend>
             <p>

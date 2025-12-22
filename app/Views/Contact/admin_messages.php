@@ -1,6 +1,9 @@
 <?php
-/* @var Message[] $messages */
-/* @var User $user */
+/**
+ * @var Message[] $messages
+ * @var User $user
+ * @var string $csrf_token
+ */
 
 $activeMessages = array_filter($messages, fn($m) => !$m->is_archived);
 $archivedMessages = array_filter($messages, fn($m) => $m->is_archived);
@@ -49,6 +52,7 @@ $archivedMessages = array_filter($messages, fn($m) => $m->is_archived);
                                     <small>Trimis la: <?= $message->sent_at ?></small>
                                 </p>
                                 <form action="/admin/messages/archive" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                     <input type="hidden" name="id" value="<?= $message->id ?>">
                                     <button type="submit"><strong>Arhivează</strong></button>
                                 </form>
@@ -77,6 +81,7 @@ $archivedMessages = array_filter($messages, fn($m) => $m->is_archived);
                                     <small>Trimis la: <?= $message->sent_at ?> [Arhivat]</small>
                                 </p>
                                 <form action="/admin/messages/dearchive" method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                     <input type="hidden" name="id" value="<?= $message->id ?>">
                                     <button type="submit">Dezarhivează</button>
                                 </form>

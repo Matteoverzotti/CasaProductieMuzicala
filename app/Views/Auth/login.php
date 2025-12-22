@@ -1,5 +1,8 @@
 <?php
-// @var string|null $error
+/**
+ * @var string|null $error
+ * @var string $csrf_token
+ */
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +22,7 @@
         <?php endif; ?>
 
         <form method="post" action="/login">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <label>Username: <input type="text" name="username" required></label><br>
             <label>Parola: <input type="password" name="password" required></label><br>
             <button>Login</button>

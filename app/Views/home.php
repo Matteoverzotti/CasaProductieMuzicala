@@ -2,6 +2,7 @@
 /* @var User|null $user
  * @var string|null $error
  * @var User[]|null $assignableUsers
+ * @var string $csrf_token
  */
 
     require_once __DIR__ . '/../Models/User.php';
@@ -51,11 +52,13 @@
                                     <?= htmlspecialchars($project->title) ?>
                                 </a>
                                 <form action="/project/update-status" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                     <input type="hidden" name="project_id" value="<?= $project->id ?>">
                                     <input type="hidden" name="status" value="approved">
                                     <button type="submit">Aprobă</button>
                                 </form>
                                 <form action="/project/update-status" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                     <input type="hidden" name="project_id" value="<?= $project->id ?>">
                                     <input type="hidden" name="status" value="denied">
                                     <button type="submit">Refuză</button>
@@ -82,6 +85,7 @@
 
                 <h3>Creează un proiect nou</h3>
                 <form action="/project/create" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     <div>
                         <label for="title">Titlu proiect:</label>
                         <input type="text" name="title" id="title" required>

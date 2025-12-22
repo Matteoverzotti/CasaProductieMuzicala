@@ -1,6 +1,9 @@
 <?php
-/* @var User $user */
-/* @var bool $isOwnAccount */
+/**
+ * @var User $user
+ * @var bool $isOwnAccount
+ * @var string $csrf_token
+ */
 require_once __DIR__ . '/../../Models/User.php';
 ?>
 
@@ -32,6 +35,7 @@ require_once __DIR__ . '/../../Models/User.php';
     </div>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
         <button type="submit" onclick="return confirm('Sunteți absolut sigur că doriți să ștergeți acest cont? Această acțiune nu poate fi anulată!')">
             Șterge Contul Permanent
         </button>

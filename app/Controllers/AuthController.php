@@ -13,6 +13,8 @@ class AuthController extends Controller {
 
             if (empty($username) || empty($password)) {
                 $_SESSION['flash'] = ['message' => 'Username-ul și parola sunt obligatorii.', 'type' => 'error'];
+            } elseif (!$this->validateRecaptcha()) {
+                $_SESSION['flash'] = ['message' => 'Validarea reCaptcha a eșuat.', 'type' => 'error'];
             } else {
                 $user = User::getByUsername($username);
                 if ($user && password_verify($password, $user->password_hash)) {
@@ -46,6 +48,8 @@ class AuthController extends Controller {
                 $_SESSION['flash'] = ['message' => 'Toate câmpurile sunt obligatorii.', 'type' => 'error'];
             } elseif ($password !== $confirmPassword) {
                 $_SESSION['flash'] = ['message' => 'Parolele nu se potrivesc.', 'type' => 'error'];
+            } elseif (!$this->validateRecaptcha()) {
+                $_SESSION['flash'] = ['message' => 'Validarea reCaptcha a eșuat.', 'type' => 'error'];
             } else {
                 if (User::getByUsername($username)) {
                     $_SESSION['flash'] = ['message' => 'Numele de utilizator este deja folosit.', 'type' => 'error'];

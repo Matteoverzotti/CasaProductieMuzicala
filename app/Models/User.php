@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/Model.php';
+require_once __DIR__ . '/Employee.php';
 require_once __DIR__ . '/../Constants/constants.php';
 
 class User extends Model {
@@ -74,7 +75,13 @@ class User extends Model {
             ':full_name' => $full_name
         ]);
 
-        return (int)$pdo->lastInsertId();
+        $userId = (int)$pdo->lastInsertId();
+
+        if ($role === SOUND_ENGINEER_ROLE_ID || $role === PRODUCER_ROLE_ID) {
+            Employee::addEntry($userId);
+        }
+
+        return $userId;
     }
 
     /**
@@ -119,6 +126,10 @@ class User extends Model {
     public static function updateUser(int $id, string $username, string $full_name, string $email, ?string $password = null, ?int $role_id = null): bool {
         $pdo = Database::getConnection();
         
+        $user = self::getUserById($id);
+        if (!$user) return false;
+        $old_role_id = $user->role_id;
+
         $params = [
             ':id' => $id,
             ':username' => $username,
@@ -144,7 +155,21 @@ class User extends Model {
         $stmt = $pdo->prepare($query);
         $result = $stmt->execute($params);
         
-        return $result && $stmt->rowCount() > 0;
+        if ($result && $role_id !== null && $role_id !== $old_role_id) {
+            $isOldEmployee = ($old_role_id === SOUND_ENGINEER_ROLE_ID || $old_role_id === PRODUCER_ROLE_ID);
+            $isNewEmployee = ($role_id === SOUND_ENGINEER_ROLE_ID || $role_id === PRODUCER_ROLE_ID);
+
+            // Even if the employee changes from engineer to producer
+            // We still want to update this record
+            if ($isOldEmployee) {
+                Employee::endEntry($id);
+            }
+            if ($isNewEmployee) {
+                Employee::addEntry($id);
+            }
+        }
+
+        return $result;
     }
 
     /**

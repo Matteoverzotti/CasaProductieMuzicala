@@ -6,6 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Controllers/HomeController.php';
 require_once __DIR__ . '/../app/Controllers/AuthController.php';
 require_once __DIR__ . '/../app/Controllers/UserController.php';
+require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 require_once __DIR__ . '/../app/Controllers/ContactController.php';
 require_once __DIR__ . '/../middleware/Auth.php';
 
@@ -28,6 +29,7 @@ $routes = [
         '/profile' => [UserController::class, 'showUserProfile'],
         '/edit-profile' => [UserController::class, 'editProfile'],
         '/users' => [UserController::class, 'showAllUsers'],
+        '/employees' => [EmployeeController::class, 'showEmployees'],
         '/contact' => [ContactController::class, 'contact'],
         '/admin/messages' => [ContactController::class, 'adminMessages'],
         '/delete-account' => [UserController::class, 'deleteAccount'],

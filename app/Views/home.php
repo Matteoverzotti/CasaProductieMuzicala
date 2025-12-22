@@ -26,13 +26,14 @@
             </p>
         <?php endif; ?>
 
-        <?php 
+        <?php
             if (!empty($user)):
         ?>
             <p>Bine ai venit, <?= htmlspecialchars($user->username) ?>!</p>
             <p>
-                <a href="/profile">Profilul meu</a> | 
+                <a href="/profile">Profilul meu</a> |
                 <a href="/edit-profile">Editează profilul</a> |
+                <a href="/employees">Vezi echipa noastră</a> |
                 <?= $user->role_id !== ADMIN_ROLE_ID ? '<a href="/contact">Contact</a> | ' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/users">Vezi toți utilizatorii</a> |' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/admin/messages">Vezi mesaje</a> |' : '' ?>
@@ -43,7 +44,7 @@
             <h2>Bine ai venit!</h2>
             <p>Aceasta este pagina principală a aplicației pentru gestionarea unei case de producție muzicală.
                 Deocamdată nu ești autentificat/ă, dar îți poți face cont accesând linkurile de mai sus.</p>
-            <p>Dacă vrei să descoperi <a href="#">echipa noastră</a>, creează-ți un cont și hai să colaborăm!</p>
+            <p>Dacă vrei să descoperi <a href="/employees">echipa noastră</a>, creează-ți un cont și hai să colaborăm!</p>
         <?php endif; ?>
     </body>
 </html>

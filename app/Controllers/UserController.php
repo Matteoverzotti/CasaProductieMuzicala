@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../Models/User.php';
+require_once __DIR__ . '/../Models/Employee.php';
 require_once __DIR__ . '/../../middleware/Auth.php';
 require_once __DIR__ . '/../Constants/constants.php';
 

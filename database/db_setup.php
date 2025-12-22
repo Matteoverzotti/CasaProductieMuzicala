@@ -62,20 +62,24 @@ try {
     $stmt = $pdo->query("SELECT id, name FROM role");
     $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    require_once __DIR__ . '/../app/Constants/constants.php';
+    require_once __DIR__ . '/../app/Database.php';
+    require_once __DIR__ . '/../app/Models/Model.php';
+    require_once __DIR__ . '/../app/Models/User.php';
+    require_once __DIR__ . '/../app/Models/Employee.php';
+
     foreach ($roles as $role) {
         $roleId = $role['id'];
         $roleName = $role['name'];
         $username = strtolower(str_replace(' ', '_', $roleName));
         $email = $username . "@example.com";
         $password = "password123";
-        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
         $fullName = $roleName . " User";
 
         $checkStmt = $pdo->prepare("SELECT id FROM user WHERE username = ?");
         $checkStmt->execute([$username]);
         if (!$checkStmt->fetch()) {
-            $insertStmt = $pdo->prepare("INSERT INTO user (role_id, username, email, password_hash, full_name) VALUES (?, ?, ?, ?, ?)");
-            $insertStmt->execute([$roleId, $username, $email, $passwordHash, $fullName]);
+            User::createUser($username, $fullName, $email, $password, $roleId);
             echo "Created user: $username (Role: $roleName, Password: $password)\n";
         } else {
             echo "User $username already exists, skipping.\n";

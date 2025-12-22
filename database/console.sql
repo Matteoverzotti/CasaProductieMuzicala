@@ -42,10 +42,11 @@ CREATE TABLE proiect (
     FOREIGN KEY created_by (created_by) REFERENCES user(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- Un proiect poate avea mai multi utilizatori asociati (artisti si/sau angajati)
+-- Un proiect poate avea mai mulți utilizatori asociați (artiști și/sau angajați)
 CREATE TABLE proiect_user (
     proiect_id INT NOT NULL,
     user_id INT NOT NULL,
+    status ENUM('pending', 'approved', 'denied') DEFAULT 'pending',
     PRIMARY KEY (proiect_id, user_id),
     FOREIGN KEY (proiect_id) REFERENCES proiect(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE

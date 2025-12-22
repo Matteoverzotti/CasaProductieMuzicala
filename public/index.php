@@ -8,6 +8,7 @@ require_once __DIR__ . '/../app/Controllers/AuthController.php';
 require_once __DIR__ . '/../app/Controllers/UserController.php';
 require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 require_once __DIR__ . '/../app/Controllers/ContactController.php';
+require_once __DIR__ . '/../app/Controllers/ProjectController.php';
 require_once __DIR__ . '/../middleware/Auth.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -33,6 +34,7 @@ $routes = [
         '/contact' => [ContactController::class, 'contact'],
         '/admin/messages' => [ContactController::class, 'adminMessages'],
         '/delete-account' => [UserController::class, 'deleteAccount'],
+        '/project/show' => [ProjectController::class, 'show'],
     ],
     'POST' => [
         '/login' => [AuthController::class, 'login'],
@@ -42,6 +44,10 @@ $routes = [
         '/edit-profile' => [UserController::class, 'editProfile'],
         '/admin/messages/archive' => [ContactController::class, 'archiveMessage'],
         '/admin/messages/dearchive' => [ContactController::class, 'dearchiveMessage'],
+        '/project/create' => [ProjectController::class, 'create'],
+        '/project/update-status' => [ProjectController::class, 'updateStatus'],
+        '/project/delete' => [ProjectController::class, 'delete'],
+        '/project/re-request' => [ProjectController::class, 'reRequest'],
     ],
 ];
 

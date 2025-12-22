@@ -89,9 +89,5 @@ $archivedMessages = array_filter($messages, fn($m) => $m->is_archived);
 
         <?php endif; ?>
     </main>
-
-    <footer>
-        <p><a href="/">Înapoi la Home</a></p>
-    </footer>
 </body>
 </html>

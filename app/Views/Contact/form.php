@@ -9,7 +9,12 @@
     <title>Contactează Adminul</title>
 </head>
 <body>
-    <h1>Contactează Adminul</h1>
+    <header>
+        <nav>
+            <a href="/">← Înapoi la pagina principală </a>
+        </nav>
+        <h1>Contactează Adminul</h1>
+    </header>
 
     <?php if (!empty($flash)): ?>
         <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
@@ -36,6 +41,5 @@
         </fieldset>
     </form>
 
-    <p><a href="/">Înapoi la Home</a></p>
 </body>
 </html>

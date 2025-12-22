@@ -97,7 +97,8 @@ class UserController extends Controller {
                     } else {
                         $updatePassword = !empty($password) ? $password : null;
                         // Only admins can change roles
-                        $updateRoleId = ($currentUser->role_id === ADMIN_ROLE_ID) ? $role_id : null;
+                        // Admins cannot change their own role
+                        $updateRoleId = ($currentUser->role_id === ADMIN_ROLE_ID && $currentUser->id !== $userToEdit->id) ? $role_id : null;
 
                         if (User::updateUser($userToEdit->id, $username, $full_name, $email, $updatePassword, $updateRoleId)) {
                             $_SESSION['flash'] = ['message' => 'Profilul a fost actualizat cu succes!', 'type' => 'success'];
@@ -136,6 +137,12 @@ class UserController extends Controller {
             http_response_code(404);
             echo "Utilizatorul nu a fost găsit.";
             return;
+        }
+
+        if ($currentUser->role_id === ADMIN_ROLE_ID && $currentUser->id === $userToDelete->id) {
+            $_SESSION['flash'] = ['message' => 'Administratorii nu își pot șterge propriul cont.', 'type' => 'error'];
+            header('Location: /profile');
+            exit;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

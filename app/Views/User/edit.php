@@ -42,7 +42,7 @@ require_once __DIR__ . '/../../Models/User.php';
             <input type="email" id="email" name="email" value="<?= htmlspecialchars($user->email) ?>" required>
         </div>
 
-        <?php if ($isAdmin): ?>
+        <?php if ($isAdmin && !$isOwnProfile): ?>
             <div>
                 <label for="role_id">Rol:</label>
                 <select id="role_id" name="role_id">
@@ -77,10 +77,12 @@ require_once __DIR__ . '/../../Models/User.php';
         <button type="submit">Actualizează Profilul</button>
     </form>
 
+    <?php if (!($isAdmin && $isOwnProfile)): ?>
     <div>
         <h3>Zonă Periculoasă</h3>
         <p>Ștergerea contului este o acțiune permanentă și nu poate fi anulată.</p>
         <a href="/delete-account<?= $isOwnProfile ? '' : '?id=' . $user->id ?>">Șterge Contul →</a>
     </div>
+    <?php endif; ?>
 </body>
 </html>

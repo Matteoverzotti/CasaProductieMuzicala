@@ -11,7 +11,7 @@ class Track extends Model {
     public int $album_id = 0;
     public string $title = '';
     public int $duration = 0;
-    public ?string $release_date = null;
+    public ?int $release_year = null;
     public string $status = 'draft';
     
     public function __construct(array $data = []) {
@@ -21,7 +21,7 @@ class Track extends Model {
             $this->album_id = (int)($data['album_id'] ?? 0);
             $this->title = $data['title'] ?? '';
             $this->duration = (int)($data['duration'] ?? 0);
-            $this->release_date = $data['release_date'] ?? null;
+            $this->release_year = isset($data['release_year']) ? (int)$data['release_year'] : null;
             $this->status = $data['status'] ?? 'draft';
         }
     }
@@ -30,17 +30,17 @@ class Track extends Model {
         return new self($data);
     }
     
-    public static function create(int $proiectId, int $albumId, string $title, int $duration, string $release_date): int {
+    public static function create(int $proiectId, int $albumId, string $title, int $duration, int $release_year): int {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("INSERT INTO " . self::$table . " (proiect_id, album_id, title, duration, release_date, status) VALUES 
-        (:proiect_id, :album_id, :title, :duration, :release_date, 'released')");
+        $stmt = $pdo->prepare("INSERT INTO " . self::$table . " (proiect_id, album_id, title, duration, release_year, status) VALUES 
+        (:proiect_id, :album_id, :title, :duration, :release_year, 'released')");
 
         $stmt->execute([
             ':proiect_id' => $proiectId,
             ':album_id' => $albumId,
             ':title' => $title,
             ':duration' => $duration,
-            ':release_date' => $release_date,
+            ':release_year' => $release_year,
         ]);
 
         return (int)$pdo->lastInsertId();
@@ -65,7 +65,7 @@ class Track extends Model {
             JOIN album a ON p.album_id = a.id
             JOIN artist ar ON a.artist_id = ar.id
             WHERE p.status = 'released'
-            ORDER BY p.release_date DESC
+            ORDER BY p.release_year DESC
         ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

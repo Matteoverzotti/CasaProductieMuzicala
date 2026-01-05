@@ -9,7 +9,7 @@ class Album extends Model {
     public int $id = 0;
     public string $title = '';
     public int $artist_id = 0;
-    public ?string $release_date = null;
+    public ?int $release_year = null;
     public ?string $genre = null;
     public ?string $artist_name = null;
     
@@ -18,7 +18,7 @@ class Album extends Model {
             $this->id = (int)($data['id'] ?? 0);
             $this->title = $data['title'] ?? '';
             $this->artist_id = (int)($data['artist_id'] ?? 0);
-            $this->release_date = $data['release_date'] ?? null;
+            $this->release_year = isset($data['release_year']) ? (int)$data['release_year'] : null;
             $this->genre = $data['genre'] ?? null;
             $this->artist_name = $data['artist_name'] ?? null;
         }
@@ -34,7 +34,7 @@ class Album extends Model {
             SELECT a.*, ar.stage_name as artist_name, ar.genre as artist_genre
             FROM " . self::$table . " a
             JOIN artist ar ON a.artist_id = ar.id
-            ORDER BY a.release_date DESC
+            ORDER BY a.release_year DESC
         ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

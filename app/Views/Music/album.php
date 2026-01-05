@@ -38,8 +38,8 @@
             <?php if (!empty($album->genre)): ?>
                 <p><strong>Gen:</strong> <?= htmlspecialchars($album->genre) ?></p>
             <?php endif; ?>
-            <?php if (!empty($album->release_date)): ?>
-                <p><strong>Data lansării:</strong> <?= htmlspecialchars($album->release_date) ?></p>
+            <?php if (!empty($album->release_year)): ?>
+                <p><strong>Anul lansării:</strong> <?= htmlspecialchars($album->release_year) ?></p>
             <?php endif; ?>
         </div>
 

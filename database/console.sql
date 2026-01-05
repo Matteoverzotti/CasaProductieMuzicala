@@ -69,7 +69,7 @@ CREATE TABLE album (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     artist_id INT NOT NULL,
-    release_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    release_year INT DEFAULT NULL,
     genre VARCHAR(100),
     FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -80,7 +80,7 @@ CREATE TABLE piesa (
     album_id INT NOT NULL,
     title VARCHAR(200) NOT NULL,
     duration INT NOT NULL, -- durata in secunde
-    release_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    release_year INT DEFAULT NULL,
     status ENUM('draft','released','archived') DEFAULT 'draft',
     FOREIGN KEY (proiect_id) REFERENCES proiect(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE CASCADE ON UPDATE CASCADE

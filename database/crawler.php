@@ -15,13 +15,43 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 class MusicCrawler {
+    private const SITEMAP_URL = "https://sitemap.discogs.com/release/100.xml"; // Got it from the sitemap / robots.txt
+    private false|CurlHandle $ch;
+
+    public function __construct() {
+        $this->ch = curl_init();
+        curl_setopt_array($this->ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+            . 'AppleWebKit/537.36 (KHTML, like Gecko) '
+            . 'Chrome/118.0.5993.90 Safari/537.36',
+
+            CURLOPT_HTTPHEADER => [
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language: en-EN,en;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Connection: keep-alive',
+            'Upgrade-Insecure-Requests: 1',
+            'Cache-Control: max-age=0',
+            ],
+        ]);
+    }
+
+    public function __destruct() {
+        if ($this->ch) {
+            unset($this->ch);
+        }
+    }
 
     public function crawlAndPopulate(): void {
-        echo "🎵 Starting music crawler...\n";
-        echo str_repeat("=", 60) . "\n\n";
+        echo "Starting Discogs music crawler...\n";
 
-        // Get music data (in production, this would scrape a website)
-        $musicData = $this->fetchMusicData();
+        $releaseUrls = $this->fetchSitemap();
+        $musicData = $this->parseDiscogsUrls($releaseUrls);
 
         $successCount = 0;
         $skipCount = 0;
@@ -35,93 +65,135 @@ class MusicCrawler {
             }
         }
 
-        echo "\n" . str_repeat("=", 60) . "\n";
-        echo "✅ Crawler completed successfully!\n";
-        echo "📊 Statistics:\n";
-        echo "   - Albums added: $successCount\n";
-        echo "   - Albums skipped (already exist): $skipCount\n";
-        echo "   - Total processed: " . count($musicData) . "\n";
+        echo "\nCrawler completed! Inserted: $successCount, Skipped: $skipCount\n";
     }
 
-    private function fetchMusicData(): array {
-        echo "📡 Fetching music data...\n\n";
+    private function fetchSitemap(): array {        
+        curl_setopt($this->ch, CURLOPT_URL, self::SITEMAP_URL);
+        $content = curl_exec($this->ch);
+        
+        if ($content === false) {
+            throw new Exception("Error fetching sitemap: " . curl_error($this->ch));
+        }
 
-        // Sample data representing popular tracks/albums
-        // Replace this with actual scraping logic
+        $httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);        
+        if ($httpCode !== 200) {
+            throw new Exception("Sitemap returned HTTP $httpCode");
+        }
+
+        return $this->parseSitemapXml($content);
+    }
+
+    private function parseSitemapXml(string $xmlContent): array {
+        $urls = [];
+        
+        // Extract <loc> tags containing release URLs
+        preg_match_all('/<loc>(https:\/\/www\.discogs\.com\/release\/[^<]+)<\/loc>/', $xmlContent, $matches);
+        
+        if (!empty($matches[1])) {
+            $urls = $matches[1];
+        }
+
+        echo "Parsed " . count($urls) . " release URLs from sitemap XML\n";
+        return $urls;
+    }
+
+    private function parseDiscogsUrls(array $urls): array {
+        $albums = [];
+        // Limit to 15 releases to respect rate limits
+        $selectedUrls = array_slice($urls, 0, 15);
+        echo "Will fetch " . count($selectedUrls) . " releases from API\n\n";
+        
+        foreach ($selectedUrls as $url) {
+            $albums[] = $this->parseReleaseUrl($url);
+        }
+        
+        return $albums;
+    }
+
+    private function parseReleaseUrl(string $url): ?array {
+        // URL format: https://www.discogs.com/release/20642-Radiohead-Karma-Police
+        // Convert to api url: https://api.discogs.com/releases/20642
+        if (!preg_match('/\/release\/(\d+)-(.+)$/', $url, $matches)) {
+            return null;
+        }
+
+        $releaseId = $matches[1];
+        $api_url = "https://api.discogs.com/releases/" . $releaseId;
+        
+        echo "[DEBUG] Fetching API: $api_url\n";
+        
+        curl_setopt($this->ch, CURLOPT_URL, $api_url);
+        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
+        $response = curl_exec($this->ch);
+        
+        if ($response === false) {
+            echo "[DEBUG] cURL error: " . curl_error($this->ch) . "\n";
+            return null;
+        }
+        
+        $httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+        if ($httpCode !== 200) {
+            echo "[DEBUG] HTTP $httpCode for release $releaseId\n";
+            return null;
+        }
+
+        $data = json_decode($response, true);
+        if (!$data) {
+            echo "[DEBUG] JSON parse error\n";
+            return null;
+        }
+        
+        $artist = 'Unknown Artist';
+        if (!empty($data['artists'])) {
+            $artist = $data['artists'][0]['name'];
+            $artist = preg_replace('/\s*\(\d+\)\s*$/', '', $artist); // Remove "(2)" suffixes
+        }
+        
+        $title = $data['title'] ?? 'Untitled';
+        $year = $data['year'] ?? date('Y');        
+        $genre = 'Unknown';
+        if (!empty($data['styles'])) {
+            $genre = $data['styles'][0];
+        } elseif (!empty($data['genres'])) {
+            $genre = $data['genres'][0];
+        }
+        
+        $tracks = [];
+        if (!empty($data['tracklist'])) {
+            foreach ($data['tracklist'] as $track) {
+                if (isset($track['type_']) && $track['type_'] === 'track') {
+                    $tracks[] = [
+                        'title' => $track['title'],
+                        'duration' => $this->parseDuration($track['duration'] ?? '0:00'),
+                    ];
+                }
+            }
+        }
+        
+        echo "[DEBUG] Parsed: $artist - $title ($year) | Genre: $genre | Tracks: " . count($tracks) . "\n";
+        
+        // Rate limiting (Discogs allows 60 req/min unauthenticated)
+        usleep(1100000);
+        
         return [
-            [
-                'title' => 'Greatest Hits Vol. 1',
-                'artist_name' => 'The Studio Artists',
-                'release_date' => '2024-01-15',
-                'genre' => 'Pop',
-                'tracks' => [
-                    ['title' => 'Summer Vibes', 'duration' => 245],
-                    ['title' => 'Night Drive', 'duration' => 198],
-                    ['title' => 'City Lights', 'duration' => 223],
-                    ['title' => 'Dancing Stars', 'duration' => 210],
-                ]
-            ],
-            [
-                'title' => 'Electronic Dreams',
-                'artist_name' => 'DJ Producer',
-                'release_date' => '2024-02-20',
-                'genre' => 'Electronic',
-                'tracks' => [
-                    ['title' => 'Pulse', 'duration' => 267],
-                    ['title' => 'Midnight Echo', 'duration' => 312],
-                    ['title' => 'Neon Waves', 'duration' => 289],
-                    ['title' => 'Digital Sunrise', 'duration' => 256],
-                    ['title' => 'Cyber Dreams', 'duration' => 301],
-                ]
-            ],
-            [
-                'title' => 'Acoustic Sessions',
-                'artist_name' => 'The Songwriters',
-                'release_date' => '2023-12-10',
-                'genre' => 'Acoustic',
-                'tracks' => [
-                    ['title' => 'Whispers', 'duration' => 201],
-                    ['title' => 'Sunrise', 'duration' => 234],
-                    ['title' => 'Memories', 'duration' => 189],
-                ]
-            ],
-            [
-                'title' => 'Urban Beats',
-                'artist_name' => 'MC Flow',
-                'release_date' => '2024-03-05',
-                'genre' => 'Hip-Hop',
-                'tracks' => [
-                    ['title' => 'Street Stories', 'duration' => 278],
-                    ['title' => 'City Rhythm', 'duration' => 245],
-                    ['title' => 'Late Night', 'duration' => 298],
-                    ['title' => 'Concrete Jungle', 'duration' => 265],
-                ]
-            ],
-            [
-                'title' => 'Rock Anthems',
-                'artist_name' => 'The Rockers',
-                'release_date' => '2023-11-20',
-                'genre' => 'Rock',
-                'tracks' => [
-                    ['title' => 'Thunder Road', 'duration' => 312],
-                    ['title' => 'Rebel Heart', 'duration' => 289],
-                    ['title' => 'Fire Storm', 'duration' => 334],
-                    ['title' => 'Electric Soul', 'duration' => 298],
-                    ['title' => 'Final Stand', 'duration' => 356],
-                ]
-            ],
-            [
-                'title' => 'Jazz Nights',
-                'artist_name' => 'Smooth Jazz Collective',
-                'release_date' => '2024-01-30',
-                'genre' => 'Jazz',
-                'tracks' => [
-                    ['title' => 'Blue Moon', 'duration' => 412],
-                    ['title' => 'Velvet Lounge', 'duration' => 367],
-                    ['title' => 'Midnight Sax', 'duration' => 389],
-                ]
-            ],
+            'title' => $title,
+            'artist_name' => $artist,
+            'release_year' => (int)$year,
+            'genre' => $genre,
+            'tracks' => $tracks,
+            'discogs_id' => $releaseId,
+            'url' => $url,
         ];
+    }
+    
+    private function parseDuration(string $duration): int {
+        if (empty($duration)) return 180;
+        $parts = explode(':', $duration);
+        if (count($parts) === 2) {
+            return (int)$parts[0] * 60 + (int)$parts[1];
+        }
+        return 180;
     }
 
     private function insertAlbum(array $albumData): ?bool {
@@ -137,7 +209,7 @@ class MusicCrawler {
             $album = Album::createAlbum([
                 'title' => $albumData['title'],
                 'artist_id' => $artistId,
-                'release_date' => $albumData['release_date'],
+                'release_year' => $albumData['release_year'],
                 'genre' => $albumData['genre']
             ]);
 
@@ -179,10 +251,10 @@ class MusicCrawler {
             throw new Exception("Album with ID $albumId not found.");
         }
         $albumName = $album->title;
-        $releaseDate = $album->release_date;
+        $releaseYear = $album->release_year;
         $projectId = $this->getOrCreateReleasedProject($artistId, $albumName);
 
-        return Track::create($projectId, $albumId, $trackData['title'], $trackData['duration'], $releaseDate);
+        return Track::create($projectId, $albumId, $trackData['title'], $trackData['duration'], $releaseYear);
     }
 
 
@@ -201,6 +273,6 @@ try {
     $crawler = new MusicCrawler();
     $crawler->crawlAndPopulate();
 } catch (Exception $e) {
-    echo "\n❌ Fatal crawler error: " . $e->getMessage() . "\n";
+    echo "\nCrawler error: " . $e->getMessage() . "\n";
     exit(1);
 }

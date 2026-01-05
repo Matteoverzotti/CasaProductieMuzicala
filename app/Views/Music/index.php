@@ -44,7 +44,7 @@
                         <td><strong><?= htmlspecialchars($album['title']) ?></strong></td>
                         <td><?= !empty($album['artist_name']) ? htmlspecialchars($album['artist_name']) : '<em>Necunoscut</em>' ?></td>
                         <td><?= !empty($album['genre']) ? htmlspecialchars($album['genre']) : '-' ?></td>
-                        <td><?= !empty($album['release_date']) ? htmlspecialchars(date('d M Y', strtotime($album['release_date']))) : '-' ?></td>
+                        <td><?= !empty($album['release_year']) ? htmlspecialchars($album['release_year']) : '-' ?></td>
                         <td><a href="/music/album?id=<?= htmlspecialchars($album['id']) ?>">Vezi detalii →</a></td>
                     </tr>
                 <?php endforeach; ?>

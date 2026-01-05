@@ -67,6 +67,12 @@
                     <a href="/project/show?id=<?= $project->id ?><?= $currentFolder->parent_id ? '&parent_id='.$currentFolder->parent_id : '' ?>"> Înapoi</a>
                 <?php endif; ?>
                 </strong>
+                |
+                <?php if ($parentId): ?>
+                    <a href="/project/folder/download?folder_id=<?= $parentId ?>">Descarcă folderul curent (ZIP)</a>
+                <?php else: ?>
+                    <a href="/project/folder/download?project_id=<?= $project->id ?>">Descarcă tot proiectul (ZIP)</a>
+                <?php endif; ?>
             </p>
         </div>
 
@@ -102,6 +108,8 @@
                             <td>
                                 <?php if (!$f['is_directory']): ?>
                                     <a href="/project/file/download?file_id=<?= htmlspecialchars($f['id']) ?>">Descărcare</a>
+                                <?php else: ?>
+                                    <a href="/project/folder/download?folder_id=<?= htmlspecialchars($f['id']) ?>">Descărcare ZIP</a>
                                 <?php endif; ?>
                                 <form action="/project/file/delete" method="POST" style="display:inline;" onsubmit="return confirm('Sigur dorești să ștergi acest element?');">
                                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">

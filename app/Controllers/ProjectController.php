@@ -374,4 +374,104 @@ class ProjectController extends Controller {
         header("Location: /project/show?id=$projectId");
         exit;
     }
+
+    public function downloadFolder(): void {
+        $user = Auth::user();
+        if (!$user) {
+            header('Location: /login');
+            exit;
+        }
+
+        $folderId = isset($_GET['folder_id']) ? (int)$_GET['folder_id'] : null;
+        $projectId = (int)($_GET['project_id'] ?? 0);
+
+        // If folder_id is provided, get that folder; otherwise download root
+        if ($folderId) {
+            $folder = ProjectFile::getFileById($folderId);
+            if (!$folder || !$folder->is_directory) {
+                http_response_code(404);
+                echo "Folder not found";
+                return;
+            }
+            $projectId = $folder->project_id;
+            $folderName = $folder->filename;
+        } else {
+            if (!$projectId) {
+                http_response_code(400);
+                echo "Project ID required";
+                return;
+            }
+            $project = Project::getProjectById($projectId);
+            if (!$project) {
+                http_response_code(404);
+                echo "Project not found";
+                return;
+            }
+            $folderName = $project->title;
+        }
+
+        if (!$this->isProjectMember($projectId, $user->id)) {
+            http_response_code(403);
+            echo "Unauthorized";
+            return;
+        }
+
+        // Create temporary zip file
+        $zipFilename = sys_get_temp_dir() . '/' . uniqid('project_') . '.zip';
+        $zip = new ZipArchive();
+        
+        if ($zip->open($zipFilename, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            http_response_code(500);
+            echo "Could not create archive";
+            return;
+        }
+
+        // Add files recursively
+        $this->addFolderToZip($zip, $projectId, $folderId ?? 0, '');
+        $zip->close();
+
+        // Check if zip has content
+        if (!file_exists($zipFilename) || filesize($zipFilename) == 0) {
+            http_response_code(404);
+            echo "No files to download";
+            return;
+        }
+
+        // Send zip file
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $folderName);
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $safeName . '.zip"');
+        header('Content-Length: ' . filesize($zipFilename));
+        header('Pragma: public');
+        header('Cache-Control: must-revalidate');
+        
+        readfile($zipFilename);
+        unlink($zipFilename);
+        exit;
+    }
+
+    private function addFolderToZip(ZipArchive $zip, int $projectId, int $parentId, string $path): void {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT id, is_directory, filename, file_path 
+            FROM project_file 
+            WHERE project_id = :project_id AND parent_id = :parent_id
+        ");
+        $stmt->execute([':project_id' => $projectId, ':parent_id' => $parentId]);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($items as $item) {
+            $itemPath = $path ? $path . '/' . $item['filename'] : $item['filename'];
+            
+            if ($item['is_directory']) {
+                $zip->addEmptyDir($itemPath);
+                $this->addFolderToZip($zip, $projectId, (int)$item['id'], $itemPath);
+            } else {
+                $fullPath = __DIR__ . '/../../storage/projects/' . $item['file_path'];
+                if (file_exists($fullPath)) {
+                    $zip->addFile($fullPath, $itemPath);
+                }
+            }
+        }
+    }
 }

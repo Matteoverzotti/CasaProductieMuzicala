@@ -50,6 +50,7 @@ $routes = [
         '/delete-account' => [UserController::class, 'deleteAccount'],
         '/project/show' => [ProjectController::class, 'show'],
         '/project/file/download' => [ProjectController::class, 'downloadFile'],
+        '/project/folder/download' => [ProjectController::class, 'downloadFolder'],
         '/music' => [MusicController::class, 'showMusic'],
         '/music/album' => [MusicController::class, 'showAlbum'],
         '/admin/analytics' => [AnalyticsController::class, 'dashboard'],

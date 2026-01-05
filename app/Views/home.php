@@ -36,6 +36,7 @@
                 <a href="/profile">Profilul meu</a> |
                 <a href="/edit-profile">Editează profilul</a> |
                 <a href="/employees">Vezi echipa noastră</a> |
+                <a href="/music">Muzică Lansată</a> |
                 <?= $user->role_id !== ADMIN_ROLE_ID ? '<a href="/contact">Contact</a> | ' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/users">Vezi toți utilizatorii</a> |' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/admin/messages">Vezi mesaje</a> |' : '' ?>
@@ -104,7 +105,7 @@
             <?php endif; ?>
 
         <?php else: ?>
-            <p><a href="/login">Conectare</a> sau <a href="/register">Înregistrare</a></p>
+            <p><a href="/login">Conectare</a> sau <a href="/register">Înregistrare</a> | <a href="/music">Muzică Lansată</a> | <a href="/employees">Echipa Noastră</a></p>
             <h2>Bine ai venit!</h2>
             <p>Aceasta este pagina principală a aplicației pentru gestionarea unei case de producție muzicală.
                 Deocamdată nu ești autentificat/ă, dar îți poți face cont accesând linkurile de mai sus.</p>

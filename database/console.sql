@@ -16,12 +16,12 @@ CREATE TABLE user (
 );
 
 CREATE TABLE artist (
-    user_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     stage_name VARCHAR(200),
     bio TEXT,
     country VARCHAR(100),
     genre VARCHAR(100),
-    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE angajat (
@@ -71,7 +71,7 @@ CREATE TABLE album (
     artist_id INT NOT NULL,
     release_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     genre VARCHAR(100),
-    FOREIGN KEY (artist_id) REFERENCES artist(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (artist_id) REFERENCES artist(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE piesa (

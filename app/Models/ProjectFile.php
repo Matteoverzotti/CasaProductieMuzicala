@@ -43,7 +43,6 @@ class ProjectFile extends Model {
 
         // Ensure boolean values are converted to integers for PDO compatibility with MySQL strict mode
         foreach ($data as $key => $value) {
-            echo $key . ' => ' . $value . "\n";
             if (is_bool($value)) {
                 $data[$key] = (int)$value;
             }

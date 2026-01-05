@@ -96,6 +96,20 @@ class Project extends Model {
         return $projectData ? self::fromArray($projectData) : null;
     }
 
+    public static function getProjectByAlbumName(int $artist_id, string $album_name): ?Project {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare("
+            SELECT * FROM " . self::$table . " p
+            WHERE p.created_by = :artist_id AND p.title = :album_name
+        ");
+        $stmt->execute([
+            ':artist_id' => $artist_id,
+            ':album_name' => $album_name
+        ]);
+        $projectData = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $projectData ? self::fromArray($projectData) : null;
+    }
+
     public static function getProjectUsers(int $project_id): array {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare("

@@ -14,6 +14,7 @@ require_once __DIR__ . '/../app/Controllers/UserController.php';
 require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 require_once __DIR__ . '/../app/Controllers/ContactController.php';
 require_once __DIR__ . '/../app/Controllers/ProjectController.php';
+require_once __DIR__ . '/../app/Controllers/MusicController.php';
 require_once __DIR__ . '/../middleware/Auth.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -41,6 +42,8 @@ $routes = [
         '/delete-account' => [UserController::class, 'deleteAccount'],
         '/project/show' => [ProjectController::class, 'show'],
         '/project/file/download' => [ProjectController::class, 'downloadFile'],
+        '/music' => [MusicController::class, 'showMusic'],
+        '/music/album' => [MusicController::class, 'showAlbum'],
     ],
     'POST' => [
         '/login' => [AuthController::class, 'login'],

@@ -44,7 +44,7 @@ $archivedMessages = array_filter($messages, fn($m) => $m->is_archived);
                         <article>
                             <header>
                                 <h3><?= htmlspecialchars($message->subject) ?></h3>
-                                <p><strong>De la:</strong> <?= htmlspecialchars($message->sender_name) ?> (<?= htmlspecialchars($message->sender_email) ?>)</p>
+                                <p><strong>De la:</strong> <?= htmlspecialchars($message->sender_name) ?> (<a href="mailto:<?= htmlspecialchars($message->sender_email) ?>"><?= htmlspecialchars($message->sender_email) ?></a>)</p>
                             </header>
                             <pre><?= htmlspecialchars($message->body) ?></pre>
                             <footer>

@@ -105,7 +105,7 @@
             <?php endif; ?>
 
         <?php else: ?>
-            <p><a href="/login">Conectare</a> sau <a href="/register">Înregistrare</a> | <a href="/music">Muzică Lansată</a> | <a href="/employees">Echipa Noastră</a></p>
+            <p><a href="/login">Conectare</a> sau <a href="/register">Înregistrare</a> | <a href="/music">Muzică Lansată</a> | <a href="/employees">Echipa Noastră</a> | <a href="/contact">Contact</a></p>
             <h2>Bine ai venit!</h2>
             <p>Aceasta este pagina principală a aplicației pentru gestionarea unei case de producție muzicală.
                 Deocamdată nu ești autentificat/ă, dar îți poți face cont accesând linkurile de mai sus.</p>

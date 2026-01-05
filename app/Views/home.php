@@ -40,6 +40,7 @@
                 <?= $user->role_id !== ADMIN_ROLE_ID ? '<a href="/contact">Contact</a> | ' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/users">Vezi toți utilizatorii</a> |' : '' ?>
                 <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/admin/messages">Vezi mesaje</a> |' : '' ?>
+                <?= $user->role_id === ADMIN_ROLE_ID ? '<a href="/admin/analytics">Statistici</a> |' : '' ?>
                 <a href="/logout">Deconectare</a>
             </p>
 

@@ -15,7 +15,9 @@ require_once __DIR__ . '/../app/Controllers/EmployeeController.php';
 require_once __DIR__ . '/../app/Controllers/ContactController.php';
 require_once __DIR__ . '/../app/Controllers/ProjectController.php';
 require_once __DIR__ . '/../app/Controllers/MusicController.php';
+require_once __DIR__ . '/../app/Controllers/AnalyticsController.php';
 require_once __DIR__ . '/../middleware/Auth.php';
+require_once __DIR__ . '/../middleware/AnalyticsMiddleware.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -26,6 +28,12 @@ $request = $_SERVER['REQUEST_URI'];
 $request = parse_url($request, PHP_URL_PATH);
 
 $method = $_SERVER['REQUEST_METHOD'];
+
+try {
+    AnalyticsMiddleware::track();
+} catch (Exception $e) {
+    // Analytics tables may not exist yet
+}
 
 $routes = [
     'GET' => [
@@ -44,6 +52,7 @@ $routes = [
         '/project/file/download' => [ProjectController::class, 'downloadFile'],
         '/music' => [MusicController::class, 'showMusic'],
         '/music/album' => [MusicController::class, 'showAlbum'],
+        '/admin/analytics' => [AnalyticsController::class, 'dashboard'],
     ],
     'POST' => [
         '/login' => [AuthController::class, 'login'],

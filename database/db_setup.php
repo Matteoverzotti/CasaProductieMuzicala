@@ -40,7 +40,8 @@ try {
 
     $migrations = [
         'console.sql',
-        'roles_setup.sql'
+        'roles_setup.sql',
+        'migrations/analytics.sql'
     ];
 
     foreach ($migrations as $file) {

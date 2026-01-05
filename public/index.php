@@ -40,6 +40,7 @@ $routes = [
         '/admin/messages' => [ContactController::class, 'adminMessages'],
         '/delete-account' => [UserController::class, 'deleteAccount'],
         '/project/show' => [ProjectController::class, 'show'],
+        '/project/file/download' => [ProjectController::class, 'downloadFile'],
     ],
     'POST' => [
         '/login' => [AuthController::class, 'login'],
@@ -53,6 +54,9 @@ $routes = [
         '/project/update-status' => [ProjectController::class, 'updateStatus'],
         '/project/delete' => [ProjectController::class, 'delete'],
         '/project/re-request' => [ProjectController::class, 'reRequest'],
+        '/project/file/upload' => [ProjectController::class, 'uploadFile'],
+        '/project/file/delete' => [ProjectController::class, 'deleteFile'],
+        '/project/folder/create' => [ProjectController::class, 'createFolder'],
     ],
 ];
 

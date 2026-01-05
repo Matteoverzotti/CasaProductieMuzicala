@@ -106,3 +106,20 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   ip VARCHAR(45),
   FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
+
+CREATE TABLE project_file (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    user_id INT NOT NULL,
+    parent_id INT DEFAULT 0,
+    is_directory BOOLEAN DEFAULT FALSE,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255) DEFAULT NULL,
+    file_path VARCHAR(255) DEFAULT NULL,
+    file_size INT DEFAULT NULL,
+    mime_type VARCHAR(100) DEFAULT NULL,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES proiect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CHECK (parent_id >= 0)
+);

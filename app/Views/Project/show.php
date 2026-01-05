@@ -5,6 +5,9 @@
  * @var User $user
  * @var bool $isAuthor
  * @var string $csrf_token
+ * @var array $files
+ * @var int|null $parentId
+ * @var ProjectFile|null $currentFolder
  */
 ?>
 
@@ -13,6 +16,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Proiect: <?= htmlspecialchars($project->title) ?></title>
+    <style>
+        table, td, th {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
 </head>
 <body>
     <a href="/">← Înapoi la pagina principală</a>
@@ -51,7 +60,96 @@
     <div>
         <h3>Sandbox</h3>
         <p>Aici vei găsi atașate tot ce este nevoie pentru proiectul tău. Poți adăuga/șterge atașamente și publica piese.</p>
-        <p>WIP</p>
+
+        <div>
+            <p><strong>Locație curentă: /<?= $currentFolder ? htmlspecialchars($currentFolder->filename) : '' ?>
+                <?php if ($parentId): ?>
+                    <a href="/project/show?id=<?= $project->id ?><?= $currentFolder->parent_id ? '&parent_id='.$currentFolder->parent_id : '' ?>"> Înapoi</a>
+                <?php endif; ?>
+                </strong>
+            </p>
+        </div>
+
+
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Nume</th>
+                    <th>Mărime</th>
+                    <th>Încărcat de</th>
+                    <th>Data încărcării</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($files)): ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Niciun fișier sau folder găsit.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($files as $f): ?>
+                        <tr>
+                            <td >
+                                <?php if ($f['is_directory']): ?>
+                                    📁 <a href="/project/show?id=<?= htmlspecialchars($project->id) ?>&parent_id=<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars($f['filename']) ?></a>
+                                <?php else: ?>
+                                    📄 <?= htmlspecialchars($f['filename']) ?>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= $f['is_directory'] ? '-' : round($f['file_size'] / 1024, 2) . ' KB' ?></td>
+                            <td><?= htmlspecialchars($f['uploader_name']) ?></td>
+                            <td><?= htmlspecialchars($f['uploaded_at']) ?></td>
+                            <td>
+                                <?php if (!$f['is_directory']): ?>
+                                    <a href="/project/file/download?file_id=<?= htmlspecialchars($f['id']) ?>">Descărcare</a>
+                                <?php endif; ?>
+                                <form action="/project/file/delete" method="POST" style="display:inline;" onsubmit="return confirm('Sigur dorești să ștergi acest element?');">
+                                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+                                    <input type="hidden" name="file_id" value="<?= htmlspecialchars($f['id']) ?>">
+                                    <button type="submit" style="color: red;">Șterge</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <?php 
+            $isApproved = false;
+            foreach ($projectUsers as $pu) {
+                if ($pu['id'] === $user->id && $pu['status'] === 'approved') {
+                    $isApproved = true;
+                    break;
+                }
+            }
+        ?>
+        <?php if ($isApproved): ?>
+        <div style="display: flex; gap: 20px;">
+            <div>
+                <p><strong>Încarcă fișier</strong></p>
+                <form action="/project/file/upload" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+                    <input type="hidden" name="project_id" value="<?= htmlspecialchars($project->id) ?>">
+                    <input type="hidden" name="parent_id" value="<?= htmlspecialchars($parentId) ?>">
+                    <input type="file" name="file" required>
+                    <button type="submit">Încarcă</button>
+                </form>
+            </div>
+            <div>
+                <p><strong>Creează folder</strong></p>
+                <form action="/project/folder/create" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+                    <input type="hidden" name="project_id" value="<?= htmlspecialchars($project->id) ?>">
+                    <input type="hidden" name="parent_id" value="<?= htmlspecialchars($parentId) ?>">
+                    <input type="text" name="folder_name" placeholder="Nume folder" required>
+                    <button type="submit">Creează</button>
+                </form>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <?php if ($isAuthor): ?>

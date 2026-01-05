@@ -13,40 +13,45 @@
     <title>Muzică Lansată - Casa de Producție</title>
 </head>
 <body>
-    <div>
+    <nav>
         <a href="/">← Înapoi la pagina principală</a>
-    </div>
+    </nav>
 
-    <h1>Muzică Lansată</h1>
+    <h1>🎵 Muzică Lansată</h1>
 
     <?php if (!empty($flash)): ?>
-        <p style="color: <?= $flash['type'] === 'error' ? 'red' : 'green' ?>">
-            <?= htmlspecialchars($flash['message']) ?>
-        </p>
+        <p><?= htmlspecialchars($flash['message']) ?></p>
     <?php endif; ?>
 
     <?php if (empty($albums)): ?>
         <p>Momentan nu există albume lansate.</p>
     <?php else: ?>
-        <h2>Albume disponibile</h2>
-        <ul>
-            <?php foreach ($albums as $album): ?>
-                <li>
-                    <strong><?= htmlspecialchars($album['title']) ?></strong>
-                    <?php if (!empty($album['artist_name'])): ?>
-                        - de <?= htmlspecialchars($album['artist_name']) ?>
-                    <?php endif; ?>
-                    <?php if (!empty($album['genre'])): ?>
-                        (<?= htmlspecialchars($album['genre']) ?>)
-                    <?php endif; ?>
-                    <?php if (!empty($album['release_date'])): ?>
-                        | Lansat: <?= htmlspecialchars($album['release_date']) ?>
-                    <?php endif; ?>
-                    <br>
-                    <a href="/music/album?id=<?= htmlspecialchars($album['id']) ?>">Vezi detalii →</a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <h2>📀 Albume disponibile</h2>
+        
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Album</th>
+                    <th>Artist</th>
+                    <th>Gen</th>
+                    <th>Data lansării</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($albums as $album): ?>
+                    <tr>
+                        <td><strong><?= htmlspecialchars($album['title']) ?></strong></td>
+                        <td><?= !empty($album['artist_name']) ? htmlspecialchars($album['artist_name']) : '<em>Necunoscut</em>' ?></td>
+                        <td><?= !empty($album['genre']) ? htmlspecialchars($album['genre']) : '-' ?></td>
+                        <td><?= !empty($album['release_date']) ? htmlspecialchars(date('d M Y', strtotime($album['release_date']))) : '-' ?></td>
+                        <td><a href="/music/album?id=<?= htmlspecialchars($album['id']) ?>">Vezi detalii →</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        
+        <p>Total: <?= count($albums) ?> album<?= count($albums) !== 1 ? 'e' : '' ?></p>
     <?php endif; ?>
 </body>
 </html>

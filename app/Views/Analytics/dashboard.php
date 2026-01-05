@@ -46,6 +46,11 @@
                 <label>Până la: <input type="date" name="end_date" value="<?= htmlspecialchars($endDate) ?>"></label>
                 <button type="submit">Filtrează</button>
             </form>
+            <p>
+                <strong>Descarcă raport:</strong>
+                <a href="/admin/analytics/export?start_date=<?= htmlspecialchars($startDate) ?>&end_date=<?= htmlspecialchars($endDate) ?>&format=excel">Excel (.xlsx)</a> |
+                <a href="/admin/analytics/export?start_date=<?= htmlspecialchars($startDate) ?>&end_date=<?= htmlspecialchars($endDate) ?>&format=pdf">PDF</a>
+            </p>
         </section>
 
         <hr>

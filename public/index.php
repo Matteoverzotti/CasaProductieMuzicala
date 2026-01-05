@@ -54,6 +54,7 @@ $routes = [
         '/music' => [MusicController::class, 'showMusic'],
         '/music/album' => [MusicController::class, 'showAlbum'],
         '/admin/analytics' => [AnalyticsController::class, 'dashboard'],
+        '/admin/analytics/export' => [AnalyticsController::class, 'exportReport'],
     ],
     'POST' => [
         '/login' => [AuthController::class, 'login'],
